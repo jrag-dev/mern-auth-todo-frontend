@@ -1,4 +1,13 @@
 import { useState } from 'react'
+import { instanceAxios } from '../config/axios.ts';
+import { AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
+
+interface ISignupData {
+  name: string,
+  username: string,
+  email: string,
+  password: string
+}
 
 const Signup = () => {
   const [name, setName] = useState<string>('');
@@ -7,8 +16,27 @@ const Signup = () => {
   const [password, setPassword] = useState<string>('');
 
 
-  const handleSubmitForm = async (e) => {
+  const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    try {
+      const config: AxiosRequestConfig = {
+        headers: {
+          'Content-Type': 'application/json',
+        } as RawAxiosRequestHeaders,
+      }
+
+      const data: ISignupData = {
+        name,
+        username,
+        email,
+        password
+      }
+      const response: AxiosResponse = await instanceAxios.post('/auth/signup', data, config);
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -17,7 +45,10 @@ const Signup = () => {
 
         <h2 className='text-center text-2xl font-bold text-violet-600 mb-10'>Signup</h2>
 
-        <form className='grid gap-5'>
+        <form
+          className='grid gap-5'
+          onSubmit={handleSubmitForm}
+        >
           <div className="flex flex-col gap-2">
             <label className='text-slate-500 font-bold' htmlFor="name">Nombre</label>
             <input
@@ -54,7 +85,7 @@ const Signup = () => {
           <div className="flex flex-col gap-2">
             <label className='text-slate-500 font-bold' htmlFor="password">Password</label>
             <input
-              type="text" 
+              type="password" 
               name="password" 
               id="password"
               className='bg-white py-2 px-4 border-2 border-slate-300 rounded-md text-slate-600'
