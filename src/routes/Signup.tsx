@@ -1,23 +1,59 @@
 import { useState } from 'react'
 import { instanceAxios } from '../config/axios.ts';
-import { AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
+import { AxiosError, AxiosRequestConfig, AxiosResponse, RawAxiosRequestHeaders } from 'axios';
+import { useNotifications } from '../hooks/useNotification.ts';
+import { useNavigate } from 'react-router-dom';
+import { IAlertResponse, ISignupData } from '../types/types.ts';
+import Alert from '../components/Alert.tsx';
+import { verifyEmail } from '../lib/verifyEmail.ts';
 
-interface ISignupData {
-  name: string,
-  username: string,
-  email: string,
-  password: string
-}
+
 
 const Signup = () => {
   const [name, setName] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [passwordConfirm, setPasswordConfirm] = useState<string>('');
+  const [alertResponse, setAlertResponse] = useState<IAlertResponse| null>(null);
+  const { addNotification } = useNotifications();
+  const navigate = useNavigate();
 
 
   const handleSubmitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if ([name, username, email, password, passwordConfirm].includes('')) {
+      setAlertResponse({
+        message: 'All fields are required',
+        success: false
+      })
+      return;
+    }
+
+    if (!verifyEmail(email)) {
+      setAlertResponse({
+        message: 'Email format no valid',
+        success: false
+      })
+      return;
+    }
+
+    if (password.length < 6) {
+      setAlertResponse({
+        message: 'Password must to be greater than 6 characters',
+        success: false
+      })
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setAlertResponse({
+        message: 'The passwords must to be equals',
+        success: false
+      })
+      return;
+    }
 
     try {
       const config: AxiosRequestConfig = {
@@ -26,16 +62,30 @@ const Signup = () => {
         } as RawAxiosRequestHeaders,
       }
 
-      const data: ISignupData = {
+      const inputData : ISignupData = {
         name,
         username,
         email,
         password
       }
-      const response: AxiosResponse = await instanceAxios.post('/auth/signup', data, config);
-      console.log(response);
+      const { data }: AxiosResponse = await instanceAxios.post('/auth/signup', inputData, config);
+
+      addNotification(
+        {
+          message: data.body.message,
+          error: !data.body.success
+        }
+      )
+      navigate('/login')
     } catch (err) {
-      console.log(err);
+      if (err instanceof AxiosError) {
+        setAlertResponse(err.response?.data.body)
+      } else {
+        setAlertResponse({
+          message: 'Error with the server',
+          success: false
+        })
+      }
     }
   }
 
@@ -49,6 +99,13 @@ const Signup = () => {
           className='grid gap-5'
           onSubmit={handleSubmitForm}
         >
+          {
+            alertResponse && (
+              <Alert
+                alert={alertResponse}
+              />
+            )
+          }
           <div className="flex flex-col gap-2">
             <label className='text-slate-500 font-bold' htmlFor="name">Nombre</label>
             <input
@@ -91,6 +148,17 @@ const Signup = () => {
               className='bg-white py-2 px-4 border-2 border-slate-300 rounded-md text-slate-600'
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <label className='text-slate-500 font-bold' htmlFor="passwordConfirm">Repeat Password</label>
+            <input
+              type="password" 
+              name="passwordConfirm" 
+              id="passwordConfirm"
+              className='bg-white py-2 px-4 border-2 border-slate-300 rounded-md text-slate-600'
+              value={passwordConfirm}
+              onChange={(e) => setPasswordConfirm(e.target.value)}
             />
           </div>
           <input 

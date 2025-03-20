@@ -11,6 +11,8 @@ import ProtectedRoutes from './routes/ProtectedRoutes.tsx'
 import AuthProvider from './contexts/auth/AuthProvider.tsx'
 import PublicLayout from './layouts/PublicLayout.tsx'
 import Landing from './routes/Landing.tsx'
+import { NotificationProvider } from './contexts/notifications/NotificationProvider.tsx'
+import { NotificationsList } from './components/Notifications.tsx'
 
 
 const router = createBrowserRouter(
@@ -49,7 +51,10 @@ const router = createBrowserRouter(
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <AuthProvider>
-      <RouterProvider router={router} />
+      <NotificationProvider>
+        <NotificationsList/>
+        <RouterProvider router={router} />
+      </NotificationProvider>
     </AuthProvider>
   </StrictMode>,
 )
