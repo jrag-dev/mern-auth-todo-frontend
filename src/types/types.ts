@@ -44,7 +44,7 @@ export interface IAuthResponse {
     success: boolean;
     user: IUser;
     accessToken: string;
-    refreskToken: string;
+    refreshToken: string;
   }
 }
 
@@ -52,5 +52,12 @@ export interface IAuthResponseError {
   body: {
     error: string;
     success: boolean;
+  }
+}
+
+export interface IAccessTokenResponse {
+  statusCode: number;
+  body: {
+    accessToken: string;
   }
 }

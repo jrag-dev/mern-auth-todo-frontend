@@ -6,6 +6,7 @@ import { useNotifications } from "../hooks/useNotification.ts";
 import { useNavigate } from "react-router-dom";
 import { IAlertResponse, ICredentials } from "../types/types.ts";
 import Alert from "../components/Alert.tsx";
+import { useAuthContext } from "../hooks/useAuth.ts";
 
 
 const Login = () => {
@@ -13,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState<string>('');
   const [alertResponse, setAlertResponse] = useState<IAlertResponse | null>(null);
   const { addNotification } = useNotifications();
+  const { saveUser } = useAuthContext();
   const navigate = useNavigate();
 
 
@@ -55,9 +57,7 @@ const Login = () => {
         password
       }
       const { data }: AxiosResponse = await instanceAxios.post('/auth/login', inputData, config);
-
-      console.log(data)
-
+      saveUser(data)
       addNotification(
         {
           message: data.body.message,
@@ -66,6 +66,7 @@ const Login = () => {
       )
       navigate('/dashboard')
     } catch (err) {
+      console.log(err)
       if (err instanceof AxiosError) {
         setAlertResponse(err.response?.data.body)
       } else {
@@ -107,7 +108,7 @@ const Login = () => {
           <div className="flex flex-col gap-2">
             <label className='text-slate-500 font-bold' htmlFor="password">Password</label>
             <input
-              type="text" 
+              type="password" 
               name="password" 
               id="password"
               className='bg-white py-2 px-4 border-2 border-slate-300 rounded-md text-slate-600'

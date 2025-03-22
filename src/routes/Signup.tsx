@@ -69,7 +69,6 @@ const Signup = () => {
         password
       }
       const { data }: AxiosResponse = await instanceAxios.post('/auth/signup', inputData, config);
-
       addNotification(
         {
           message: data.body.message,

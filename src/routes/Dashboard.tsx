@@ -1,8 +1,11 @@
+import { useAuthContext } from "../hooks/useAuth.ts"
 
 const Dashboard = () => {
+  const { user } = useAuthContext();
+
   return (
     <div>
-      Dashboard Page
+      Dashboard de {user.name}
     </div>
   )
 }
