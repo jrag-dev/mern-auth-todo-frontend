@@ -1,12 +1,16 @@
 
-
 interface IButtonProps {
   text: string;
+  handler: () => void;
+  className: string;
 }
 
-const Button = ({ text }: IButtonProps) => {
+const Button = ({ text, handler, className }: IButtonProps) => {
   return (
-    <button className="border border-slate-600 px-6 py-1.5 text-slate-500 rounded-md cursor-pointer">
+    <button 
+      className={`border px-6 py-2 font-medium rounded-md cursor-pointer ${className} transition-all duration-200 ease-in-out`}
+      onClick={() => handler()}
+    >
       {text}
     </button>
   )

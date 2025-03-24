@@ -62,6 +62,14 @@ export interface IAccessTokenResponse {
   }
 }
 
+export interface ISignoutResponse {
+  statusCode: number;
+  body: {
+    message: string;
+    success: boolean;
+  }
+}
+
 // Tasks Response
 export interface ITask {
   _id: string;

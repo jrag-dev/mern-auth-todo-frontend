@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { IAuthResponse, IUser } from "../../types/types.ts";
+import { IAuthResponse, INotification, ISignoutResponse, IUser } from "../../types/types.ts";
 import { instanceAxios } from "../../config/axios.ts";
 import { AxiosRequestConfig, RawAxiosRequestHeaders } from "axios";
 
@@ -12,11 +12,13 @@ interface AuthProviderProps {
 export const AuthContext = createContext(
   {
     isAuthenticated: false,
-    user: {},
+    user: {} as IUser,
     accessToken: '',
+    loading: false,
     getAccessToken: () => {},
     saveUser: (userData: IAuthResponse) => {},
     getRefreshToken: () => {},
+    signout: () => {}
   }
 );
 
@@ -24,8 +26,8 @@ export const AuthContext = createContext(
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [user, setUser] = useState<IUser>()
-  //const [refreshToken, setRefreshToken] = useState('');
+  const [user, setUser] = useState<IUser>({} as IUser);
+  const [loading, setLoading] = useState<boolean>(false);
 
 
   useEffect(() => {
@@ -70,7 +72,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       return data.body.user;
     } catch (err) {
       console.log(err)
-      return null;
+      return {};
     }
   }
 
@@ -109,13 +111,45 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     saveSessionInfo(userData.body.user, userData.body.accessToken, userData.body.refreshToken);
   }
 
+  const signout = async () : Promise<Omit<INotification, "id">> => {
+    let notification: Omit<INotification, 'id'>;
+
+    try {
+      setLoading(true)
+      const config: AxiosRequestConfig = {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${accessToken}`
+        } as RawAxiosRequestHeaders,
+      }
+      const { data } = await instanceAxios.post('/auth/signout', config);
+      const response: ISignoutResponse = { ...data };
+      setLoading(false)
+      const notification = {
+        message: response.body.message,
+        error: !response.body.success
+      }
+      return notification
+    } catch (err) {
+      setLoading(false)
+      console.log(err)
+      const notification = {
+        message: 'Error with the logout',
+        error: true
+      }
+      return notification
+    }
+  }
+
   const data = {
     isAuthenticated,
     user,
     accessToken,
+    loading,
     getAccessToken,
     saveUser,
-    getRefreshToken
+    getRefreshToken,
+    signout
   }
 
   return (

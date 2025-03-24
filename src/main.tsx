@@ -14,6 +14,8 @@ import Landing from './routes/Landing.tsx'
 import { NotificationProvider } from './contexts/notifications/NotificationProvider.tsx'
 import { NotificationsList } from './components/Notifications.tsx'
 import TasksProvider from './contexts/tasks/TasksProvider.tsx'
+import CreateTask from './routes/CreateTask.tsx'
+import Profile from './routes/Profile.tsx'
 
 
 const router = createBrowserRouter(
@@ -43,6 +45,14 @@ const router = createBrowserRouter(
         {
           path: '/dashboard',
           element: <Dashboard/>
+        },
+        {
+          path: '/dashboard/profile',
+          element: <Profile/>,
+        },
+        {
+          path: '/tasks/add-task',
+          element: <CreateTask/>,
         }
       ]
     }
@@ -54,9 +64,9 @@ createRoot(document.getElementById('root')!).render(
     <AuthProvider>
       <NotificationProvider>
         <TasksProvider>
+          <NotificationsList/> 
           <RouterProvider router={router} />
         </TasksProvider>
-        <NotificationsList/>
       </NotificationProvider>
     </AuthProvider>
   </StrictMode>,
