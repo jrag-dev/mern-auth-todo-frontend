@@ -61,3 +61,20 @@ export interface IAccessTokenResponse {
     accessToken: string;
   }
 }
+
+// Tasks Response
+export interface ITask {
+  _id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+}
+
+export interface ITasksResponse {
+  statusCode: number;
+  body: {
+    message: string;
+    success: boolean;
+    tasks: ITask[];
+  }
+}

@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { IAccessTokenResponse, IAuthResponse, IUser } from "../../types/types.ts";
+import { IAuthResponse, IUser } from "../../types/types.ts";
 import { instanceAxios } from "../../config/axios.ts";
 import { AxiosRequestConfig, RawAxiosRequestHeaders } from "axios";
 
@@ -13,6 +13,7 @@ export const AuthContext = createContext(
   {
     isAuthenticated: false,
     user: {},
+    accessToken: '',
     getAccessToken: () => {},
     saveUser: (userData: IAuthResponse) => {},
     getRefreshToken: () => {},
@@ -111,6 +112,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const data = {
     isAuthenticated,
     user,
+    accessToken,
     getAccessToken,
     saveUser,
     getRefreshToken

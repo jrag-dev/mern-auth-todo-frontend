@@ -5,7 +5,7 @@ const ProtectedRoutes = () => {
   const { isAuthenticated } = useAuthContext();
   
   return (
-    <div>
+    <section className="w-full">
       {
         isAuthenticated
           ? (
@@ -15,7 +15,7 @@ const ProtectedRoutes = () => {
             <Navigate to='/login'/>
           )
       }
-    </div>
+    </section>
   )
 }
 
