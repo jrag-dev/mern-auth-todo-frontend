@@ -1,3 +1,4 @@
+import { useTasksContext } from "../hooks/useTasks.ts";
 import Button from "./Button.tsx";
 
 
@@ -11,7 +12,9 @@ interface ITaskItemProps {
 }
 
 const TaskItem = ({ task }: ITaskItemProps) => {
-  const {_id, title, completed, createdAt } = task;
+  const {_id, title, completed } = task;
+
+  const { completeTask, uncompleteTask, deleteTask } = useTasksContext();
 
   return (
     <tr className="bg-white border-b border-slate-200">
@@ -22,18 +25,22 @@ const TaskItem = ({ task }: ITaskItemProps) => {
             ? (
               <Button
                 text='Completed'
+                _id={_id}
                 className="bg-lime-200 text-lime-500 border-2 border-lime-500"
+                handler={uncompleteTask}
               />
             ) : (
               <Button
                 text='Uncompleted'
+                _id={_id}
                 className="bg-yellow-100 text-yellow-500 border-2 border-yellow-500"
+                handler={completeTask}
               />
             )
         }
       </td>
       <td className="py-4">
-        <Button 
+        <Button
           text='Update'
           className="bg-violet-200 text-violet-500 border-2 border-violet-500"
         />
@@ -41,7 +48,9 @@ const TaskItem = ({ task }: ITaskItemProps) => {
       <td className="py-4">
         <Button 
           text='Delete' 
+          _id={_id}
           className="bg-rose-200 text-rose-600 border-2 border-rose-500"
+          handler={deleteTask}
         />
       </td>
     </tr>

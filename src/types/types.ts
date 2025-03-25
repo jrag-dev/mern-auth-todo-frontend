@@ -86,3 +86,21 @@ export interface ITasksResponse {
     tasks: ITask[];
   }
 }
+
+
+export interface ITaskResponse {
+  statusCode: number;
+  body: {
+    message: string;
+    success: boolean;
+    task: ITask;
+  }
+}
+
+// create task Form
+export interface ITaskForm {
+  _id: string | null;
+  title: string;
+  completed: boolean;
+  createdAt: Date | null;
+}
