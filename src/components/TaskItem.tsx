@@ -8,10 +8,11 @@ interface ITaskItemProps {
     title: string;
     completed: boolean;
     createdAt: Date
-  }
+  },
+  handlerEditTaskTodo: (_id: string) => void;
 }
 
-const TaskItem = ({ task }: ITaskItemProps) => {
+const TaskItem = ({ task, handlerEditTaskTodo }: ITaskItemProps) => {
   const {_id, title, completed } = task;
 
   const { completeTask, uncompleteTask, deleteTask } = useTasksContext();
@@ -42,7 +43,9 @@ const TaskItem = ({ task }: ITaskItemProps) => {
       <td className="py-4">
         <Button
           text='Update'
+          _id={_id}
           className="bg-violet-200 text-violet-500 border-2 border-violet-500"
+          handler={handlerEditTaskTodo}
         />
       </td>
       <td className="py-4">

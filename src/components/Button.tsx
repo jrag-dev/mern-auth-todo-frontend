@@ -1,7 +1,7 @@
 
 interface IButtonProps {
   text: string;
-  _id: string | undefined;
+  _id?: string | undefined;
   handler: (...args: any[]) => void;
   className: string;
 }

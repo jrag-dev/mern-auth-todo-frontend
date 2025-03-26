@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Modal from './Modal.tsx';
 import { useTasksContext } from '../hooks/useTasks.ts';
 import { IAlertResponse, ITaskForm } from '../types/types.ts';
@@ -23,7 +23,13 @@ const CreateTaskForm = ({ isOpen, closeModal } : ICreateTaskForm) => {
   const [taskForm, setTaskForm] = useState<ITaskForm>(initialState);
   const [alertResponse, setAlertResponse] = useState<IAlertResponse| null>(null);
 
-  const { addTask } = useTasksContext();
+  const { taskToEdit, addTask } = useTasksContext();
+
+  useEffect(() => {
+    if (taskToEdit?._id) {
+      setTaskForm(taskToEdit);
+    }
+  }, [taskToEdit?._id])
 
 
   const handlerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,6 +54,7 @@ const CreateTaskForm = ({ isOpen, closeModal } : ICreateTaskForm) => {
 
     setAlertResponse(null);
     closeModal();
+    setTaskForm(initialState);
   }
 
   return (
@@ -73,6 +80,7 @@ const CreateTaskForm = ({ isOpen, closeModal } : ICreateTaskForm) => {
             name="title" 
             id="title"
             className='border-2 border-slate-200 py-2 px-4 rounded-md bg-white text-slate-900'
+            value={taskForm.title}
             onChange={handlerChange}
           />
         </div>

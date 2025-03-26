@@ -9,10 +9,16 @@ const Dashboard = () => {
   const { user } = useAuthContext();
   const { tasks, loading } = useTasksContext();
   const { isOpenModal: isOpenModalCreate, handlerOpenModal: handlerOpenModalCreate, handlerCloseModal: handlerCloseModalCreate } = useModal();
+  const { handlerEditTask } = useTasksContext();
 
 
   if (loading) {
     return <p>Cargando...</p>
+  }
+
+  const handlerEditTaskTodo = (_id: string) => {
+    handlerEditTask(_id);
+    handlerOpenModalCreate();
   }
 
   return (
@@ -46,6 +52,7 @@ const Dashboard = () => {
                 </div>
                 <TaskList 
                   tasks={tasks}
+                  handlerEditTaskTodo={handlerEditTaskTodo}
                 />
               </article>
             ) : (

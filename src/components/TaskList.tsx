@@ -3,9 +3,10 @@ import TaskItem from "./TaskItem.tsx";
 
 interface ITaskListProps {
   tasks: ITask[];
+  handlerEditTaskTodo: (_id: string) => void;
 }
 
-const TaskList = ({ tasks }: ITaskListProps) => {
+const TaskList = ({ tasks, handlerEditTaskTodo }: ITaskListProps) => {
 
   return (
     <table className="w-full mt-10 text-sm text-left rtl:text-right text-gray-400">
@@ -24,6 +25,7 @@ const TaskList = ({ tasks }: ITaskListProps) => {
               <TaskItem
                 key={task._id}
                 task={task}
+                handlerEditTaskTodo={handlerEditTaskTodo}
               />
             )
           })
