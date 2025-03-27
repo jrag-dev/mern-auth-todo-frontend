@@ -8,25 +8,35 @@ interface AuthProviderProps {
   children: React.ReactNode;
 }
 
+interface IAuthContext {
+  isAuthenticated: boolean,
+  user: IUser | null,
+  accessToken: string,
+  loading: boolean,
+  getAccessToken: () => void,
+  saveUser: (_userData: IAuthResponse) => void,
+  getRefreshToken: () => void,
+  signout: () => void
+}
 
-export const AuthContext = createContext(
-  {
-    isAuthenticated: false,
-    user: {} as IUser,
-    accessToken: '',
-    loading: false,
-    getAccessToken: () => {},
-    saveUser: (userData: IAuthResponse) => {},
-    getRefreshToken: () => {},
-    signout: () => {}
-  }
-);
+const defaultState = {
+  isAuthenticated: false,
+  user: null,
+  accessToken: '',
+  loading: false,
+  getAccessToken: () => {},
+  saveUser: (_userData: IAuthResponse) => {},
+  getRefreshToken: () => {},
+  signout: () => {}
+}
+
+export const AuthContext = createContext<IAuthContext>(defaultState);
 
 
 const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [accessToken, setAccessToken] = useState('');
-  const [user, setUser] = useState<IUser>({} as IUser);
+  const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
 
@@ -93,7 +103,6 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }
 
-
   const getAccessToken = () => {
     return accessToken;
   }
@@ -106,26 +115,31 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     return JSON.parse(tokenStored);
   }
 
-
   const saveUser = (userData: IAuthResponse) => {
     saveSessionInfo(userData.body.user, userData.body.accessToken, userData.body.refreshToken);
   }
 
   const signout = async () : Promise<Omit<INotification, "id">> => {
     let notification: Omit<INotification, 'id'>;
+    const refreshToken = getRefreshToken();
+    console.log('Refresh token frontend: ', refreshToken)
 
     try {
       setLoading(true)
       const config: AxiosRequestConfig = {
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`
+          'Authorization': `Bearer ${refreshToken}`
         } as RawAxiosRequestHeaders,
       }
-      const { data } = await instanceAxios.post('/auth/signout', config);
+      const { data } = await instanceAxios.post('/auth/signout', {}, config);
       const response: ISignoutResponse = { ...data };
-      setLoading(false)
-      const notification = {
+      setLoading(false);
+      setUser(null);
+      setIsAuthenticated(false);
+      setAccessToken('');
+      localStorage.removeItem('token');
+      notification = {
         message: response.body.message,
         error: !response.body.success
       }
@@ -133,7 +147,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     } catch (err) {
       setLoading(false)
       console.log(err)
-      const notification = {
+      notification = {
         message: 'Error with the logout',
         error: true
       }
@@ -154,7 +168,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   return (
     <AuthContext.Provider value={data}>
-      {children}
+      {
+        loading ? <p>Loading...</p> : children
+      }
     </AuthContext.Provider>
   )
 }

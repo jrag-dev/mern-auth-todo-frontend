@@ -23,7 +23,7 @@ const Dashboard = () => {
 
   return (
     <section className="container mx-auto">
-      <h1 className="text-slate-500 font-black text-2xl mt-8">Dashboard de {user.name}</h1>
+      <h1 className="text-slate-500 font-black text-2xl mt-8">Dashboard of {user.name}</h1>
       {
         isOpenModalCreate && (
           <CreateTaskForm

@@ -4,7 +4,6 @@ import { AxiosRequestConfig, RawAxiosRequestHeaders } from "axios";
 import { useAuthContext } from "../../hooks/useAuth.ts";
 import { ITask, ITaskForm, ITaskResponse, ITasksResponse } from "../../types/types.ts";
 import { useNotifications } from "../../hooks/useNotification.ts";
-import { useModal } from "../../hooks/useModal.ts";
 
 
 // Interfaces
